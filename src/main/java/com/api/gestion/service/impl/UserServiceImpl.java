@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     private boolean validateSignUpMap(Map<String, String> requestMap){
         if (requestMap.containsKey("nombre")
-        && requestMap.containsKey("numeroContacto")
+        && requestMap.containsKey("numeroDeContacto")
         && requestMap.containsKey("email")
         && requestMap.containsKey("password")){
             return true;
