@@ -60,7 +60,8 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<String> login(Map<String, String> requestMap) {
         log.info("Dentro de login");
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password"))
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password"))
             );
             if (customerDetailService.getUserDetail().getStatus().equalsIgnoreCase("true")){
                 return new ResponseEntity<String >(

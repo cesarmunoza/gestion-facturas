@@ -16,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -28,6 +28,17 @@ public class UserController {
             return userService.signUp(requestMap);
         }catch (Exception e){
 
+        }
+        return FacturaUtils.getResponseEntity(FacturaConstantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody(required = true) Map<String, String> requestMap){
+        try {
+            return userService.login(requestMap);
+
+        }catch (Exception e){
+           e.printStackTrace();
         }
         return FacturaUtils.getResponseEntity(FacturaConstantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
