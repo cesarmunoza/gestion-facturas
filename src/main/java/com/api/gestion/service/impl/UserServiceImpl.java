@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
         return FacturaUtils.getResponseEntity(FacturaConstantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> login(Map<String, String> requestMap) {
+        return null;
+    }
+
     private boolean validateSignUpMap(Map<String, String> requestMap){
         if (requestMap.containsKey("nombre")
         && requestMap.containsKey("numeroDeContacto")
