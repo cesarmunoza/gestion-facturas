@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        //Estas son las url que no van a tener seguridad, no se necesita ingresar sesión o autenticarse.
+                        // con permitAll se le permite a cualquiera
                         .requestMatchers("/user/login", "/user/signup", "/user/forgotPassword").permitAll()
                         .anyRequest().authenticated()
                 )
