@@ -3,12 +3,17 @@ package com.api.gestion.service.impl;
 import com.api.gestion.constantes.FacturaConstantes;
 import com.api.gestion.dao.UserDao;
 import com.api.gestion.pojo.User;
+import com.api.gestion.security.CustomerDetailService;
+import com.api.gestion.security.jwt.JwtUtil;
 import com.api.gestion.service.UserService;
 import com.api.gestion.util.FacturaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,11 +23,16 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private UserDao userDao;
+    private AuthenticationManager authenticationManager;
+    private CustomerDetailService customerDetailService;
+    private JwtUtil jwtUtil;
 
-    public UserServiceImpl(UserDao userDao){
+    public UserServiceImpl(UserDao userDao, AuthenticationManager authenticationManager, CustomerDetailService customerDetailService, JwtUtil jwtUtil){
         this.userDao = userDao;
+        this.authenticationManager = authenticationManager;
+        this.customerDetailService = customerDetailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -48,7 +58,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<String> login(Map<String, String> requestMap) {
-        return null;
+        log.info("Dentro de login");
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password"))
+            );
+            if (customerDetailService.getUserDetail().getStatus().equalsIgnoreCase("true")){
+                return new ResponseEntity<String >(
+                        "{\"token\":\""+ jwtUtil.generateToken(customerDetailService.getUserDetail().getEmail(),
+                                customerDetailService.getUserDetail().getRole()) + "\"}",
+                        HttpStatus.OK);
+            }else {
+                return new ResponseEntity<String>("{\"mensaje\":\""+ "Espere la aprobación del administrador" + "\"}", HttpStatus.BAD_REQUEST);
+            }
+
+        }catch (Exception exception){
+            log.error("{}", exception);
+        }
+        return new ResponseEntity<String>("{\"mensaje\":\""+ "Credenciales incorrectas" + "\"}", HttpStatus.BAD_REQUEST);
     }
 
     private boolean validateSignUpMap(Map<String, String> requestMap){
